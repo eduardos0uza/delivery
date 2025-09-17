@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Açaí do HidenSystems - Delivery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <style>
+    .btn-purple {
+      background-color: #7c3aed;
+      color: white;
+    }
+    .btn-purple:hover {
+      background-color: #6d28d9;
+    }
+    #checkout-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.4);
+      align-items: center;
+      justify-content: center;
+    }
+    #checkout-modal.active {
+      display: flex;
+    }
+    #checkout-modal .modal-content {
+      background: white;
+      border-radius: 1rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    .badge-sold {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #a855f7;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      user-select: none;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    #closed-banner {
+      position: sticky;
+      top: 64px;
+      z-index: 45;
+    }
+    .btn-disabled {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <header class="bg-white border-b sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <img src="image.png" alt="Logo" class="h-12 w-12 object-contain" />
+        <div>
+          <h1 class="text-lg font-bold">Açaí do HidenSystems</h1>
+          <p class="text-xs text-gray-500">Delivery</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="login-btn" class="px-4 py-2 rounded-full btn-purple flex items-center gap-2">
+          <i class="fas fa-user"></i> Login
+        </button>
+        <button id="open-cart-btn" class="relative px-4 py-2 rounded-full btn-purple flex items-center gap-2">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-count" class="text-sm font-semibold">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNER DE LOJA FECHADA -->
+  <div id="closed-banner" class="hidden bg-red-600 text-white text-center py-2 font-semibold">
+    Loja fechada — horário: <span id="closed-hours"></span>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <section class="grid md:grid-cols-3 gap-6 items-center mb-8">
+      <div class="md:col-span-2 bg-gradient-to-r from-purple-50 to-white rounded-2xl p-6 shadow-sm">
+        <h2 class="text-3xl font-extrabold">Açaí do HidenSystems</h2>
+        <div id="store-status" class="text-green-600 font-semibold flex items-center gap-1 mb-4">
+          <!-- Status será atualizado pelo JS -->
+        </div>
+        <p class="mt-2 text-gray-600">O melhor açaí da região com delivery rápido e prático!</p>
+        <div class="mt-4 flex gap-3">
+          <a href="#catalog" class="px-4 py-2 rounded-lg border hover:bg-purple-50">Ver produtos</a>
+          <button id="cta-open-cart" class="px-4 py-2 rounded-lg btn-purple">Abrir carrinho</button>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 shadow-sm glass">
+        <h3 class="font-semibold">Destaque</h3>
+        <div class="mt-3">
+          <img src="hero.jpg" alt="Produto destaque" class="w-full h-40 object-cover rounded-lg" />
+        </div>
+      </div>
+    </section>
+
+    <section id="catalog" class="space-y-12">
+      <!-- Categoria: Açaí Copo -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Açaí Copo</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="acai-200ml.jpg" alt="Açaí Copo - 200ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Açaí Copo - 200ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 9,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="1">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="acai-330ml.jpg" alt="Açaí Copo - 330ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Açaí Copo - 330ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 11,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="2">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="acai-440ml.jpg" alt="Açaí Copo - 440ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Açaí Copo - 440ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 13,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="3">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="acai-550ml.jpg" alt="Açaí Copo - 550ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Açaí Copo - 550ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 14,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="4">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categoria: Vitaminas -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Vitaminas</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="vitamina-550ml.jpg" alt="Vitamina de Açaí 550ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Vitamina de Açaí 550ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 15,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="5">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="vitamina-1l.jpg" alt="Vitamina de Açaí 1 Litro" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Vitamina de Açaí 1 Litro</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 28,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="6">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categoria: Milk Shake -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Milk Shake</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="milkshake-330ml.jpg" alt="Milk Shake - 330ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Milk Shake - 330ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 13,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="7">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="milkshake-550ml.jpg" alt="Milk Shake - 550ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Milk Shake - 550ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 15,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="8">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categoria: Sundae -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Sundae</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="sundae-330ml.jpg" alt="Sundae - 330ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Sundae - 330ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 11,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="9">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="sundae-550ml.jpg" alt="Sundae - 550ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Sundae - 550ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 14,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="10">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categoria: Bebidas -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Bebidas</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="guaravita.jpg" alt="Guaravita" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Guaravita</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 3,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="11">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="coca-cola-350ml.jpg" alt="Coca cola 350 ml" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Coca cola 350 ml</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 6,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="12">Adicionar</button>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm border p-4 relative">
+            <img src="agua.jpg" alt="Água" class="w-full h-32 object-cover rounded-lg" />
+            <div class="mt-3">
+              <h4 class="font-semibold">Água</h4>
+              <div class="mt-1 text-purple-700 font-bold">R$ 3,00</div>
+              <button class="mt-2 w-full px-3 py-2 rounded-lg btn-purple add-btn" data-id="13">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="fixed inset-0 z-50 hidden">
+    <div id="cart-backdrop" class="absolute inset-0 bg-black/40"></div>
+    <aside class="absolute right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl p-6 overflow-auto">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold">Seu Carrinho</h3>
+        <button id="close-cart" class="text-gray-600 hover:text-gray-900"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="cart-items" class="mt-4 space-y-3">
+        <!-- Itens adicionados via JS -->
+      </div>
+      <div class="mt-4 border-t pt-4">
+        <div class="flex justify-between items-center">
+          <div class="text-sm text-gray-600">Subtotal</div>
+          <div id="cart-subtotal" class="font-semibold">R$ 0,00</div>
+        </div>
+        <div class="mt-4">
+          <label class="text-sm text-gray-600">Cupom (opcional)</label>
+          <div class="flex gap-2 mt-2">
+            <input id="coupon-code" class="flex-1 px-3 py-2 rounded-lg border" placeholder="EX: PROMO10" />
+            <button id="apply-coupon" class="px-3 py-2 rounded-lg bg-gray-100">Aplicar</button>
+          </div>
+          <p id="coupon-msg" class="text-xs text-green-600 mt-2 hidden"></p>
+        </div>
+        <div class="mt-4">
+          <button id="checkout-btn" class="w-full px-4 py-3 rounded-lg btn-purple font-semibold hover:bg-purple-800">
+            Finalizar Pedido
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="">
+    <div class="modal-content">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-purple-700">Finalizar Pedido</h3>
+        <button id="close-checkout" class="text-gray-600 hover:text-gray-800"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="checkout-form" class="space-y-4">
+        <div>
+          <label class="text-sm block mb-1">Nome</label>
+          <input id="cust-name" required class="w-full px-3 py-2 rounded-lg border" placeholder="Seu nome" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">WhatsApp</label>
+          <input id="cust-phone" required class="w-full px-3 py-2 rounded-lg border" placeholder="Ex: 5511999887766" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Endereço</label>
+          <input id="cust-address" required class="w-full px-3 py-2 rounded-lg border" placeholder="Rua, número, complemento" />
+        </div>
+        <div>
+          <label class="text-sm block mb-1">Observações</label>
+          <textarea id="cust-note" class="w-full px-3 py-2 rounded-lg border" rows="3" placeholder="Observações para o pedido (opcional)"></textarea>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <h4 class="font-medium text-purple-700 mb-2">Resumo do Pedido</h4>
+          <div id="order-summary" class="text-sm"></div>
+          <div class="mt-2 flex justify-between font-semibold text-purple-700">
+            <span>Total:</span>
+            <span id="order-total">R$ 0,00</span>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button type="submit" class="flex-1 px-4 py-3 rounded-lg btn-purple font-semibold hover:bg-purple-800">Confirmar Pedido</button>
+          <button type="button" id="back-to-cart" class="px-4 py-3 rounded-lg border">Voltar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-lg p-6 max-w-sm w-full">
+      <h3 class="text-xl font-semibold mb-4 text-purple-700">Bem-vindo! Faça seu login</h3>
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="login-name" class="block text-sm font-medium text-gray-700">Nome</label>
+          <input id="login-name" type="text" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Seu nome" />
+        </div>
+        <div>
+          <label for="login-phone" class="block text-sm font-medium text-gray-700">WhatsApp</label>
+          <input id="login-phone" type="tel" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Ex: 5511999887766" />
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="submit" class="px-4 py-2 rounded-lg btn-purple text-white font-semibold hover:bg-purple-800">Entrar</button>
+          <button type="button" id="cancel-login" class="px-4 py-2 rounded-lg border">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const WA_NUMBER = '55DDDNUMERO'; // Substitua pelo seu número
+
+    const PRODUCTS = [
+      { id: 1, name: 'Açaí Copo - 200ml', price: 9.0, img: 'acai-200ml.jpg' },
+      { id: 2, name: 'Açaí Copo - 330ml', price: 11.0, img: 'acai-330ml.jpg' },
+      { id: 3, name: 'Açaí Copo - 440ml', price: 13.0, img: 'acai-440ml.jpg' },
+      { id: 4, name: 'Açaí Copo - 550ml', price: 14.0, img: 'acai-550ml.jpg' },
+      { id: 5, name: 'Vitamina de Açaí 550ml', price: 15.0, img: 'vitamina-550ml.jpg' },
+      { id: 6, name: 'Vitamina de Açaí 1 Litro', price: 28.0, img: 'vitamina-1l.jpg' },
+      { id: 7, name: 'Milk Shake - 330ml', price: 13.0, img: 'milkshake-330ml.jpg' },
+      { id: 8, name: 'Milk Shake - 550ml', price: 15.0, img: 'milkshake-550ml.jpg' },
+      { id: 9, name: 'Sundae - 330ml', price: 11.0, img: 'sundae-330ml.jpg' },
+      { id: 10, name: 'Sundae - 550ml', price: 14.0, img: 'sundae-550ml.jpg' },
+      { id: 11, name: 'Guaravita', price: 3.0, img: 'guaravita.jpg' },
+      { id: 12, name: 'Coca cola 350 ml', price: 6.0, img: 'coca-cola-350ml.jpg' },
+      { id: 13, name: 'Água', price: 3.0, img: 'agua.jpg' },
+    ];
+
+    // Horário de funcionamento da loja (24h)
+    const openingTime = "14:30";
+    const closingTime = "21:40";
+
+    function isStoreOpen(now = new Date()) {
+      const [openH, openM] = openingTime.split(':').map(Number);
+      const [closeH, closeM] = closingTime.split(':').map(Number);
+
+      const openDate = new Date(now);
+      openDate.setHours(openH, openM, 0, 0);
+
+      const closeDate = new Date(now);
+      closeDate.setHours(closeH, closeM, 0, 0);
+
+      return now >= openDate && now <= closeDate;
+    }
+
+    // Função que ativa/desativa botões e mostra banner
+    function updateStoreStatusUI() {
+      const statusEl = document.getElementById('store-status');
+      const addButtons = Array.from(document.querySelectorAll('.add-btn'));
+      const checkoutBtn = document.getElementById('checkout-btn');
+      const closedBanner = document.getElementById('closed-banner');
+      const closedHours = document.getElementById('closed-hours');
+
+      closedHours.textContent = `${openingTime} - ${closingTime}`;
+
+      if (isStoreOpen()) {
+        statusEl.textContent = `Aberto! ${openingTime} - ${closingTime}`;
+        statusEl.className = 'text-green-600 font-semibold flex items-center gap-1';
+        closedBanner.classList.add('hidden');
+
+        addButtons.forEach(btn => {
+          btn.disabled = false;
+          btn.classList.remove('btn-disabled');
+        });
+        if (checkoutBtn) {
+          checkoutBtn.disabled = false;
+          checkoutBtn.classList.remove('btn-disabled');
+        }
+      } else {
+        statusEl.textContent = `Fechado! ${openingTime} - ${closingTime}`;
+        statusEl.className = 'text-red-600 font-semibold flex items-center gap-1';
+        closedBanner.classList.remove('hidden');
+
+        addButtons.forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('btn-disabled');
+        });
+        if (checkoutBtn) {
+          checkoutBtn.disabled = true;
+          checkoutBtn.classList.add('btn-disabled');
+        }
+      }
+    }
+
+    // mostra alerta e banner quando usuário tenta comprar com loja fechada
+    function handleAddAttemptWhileClosed(e, id) {
+      if (!isStoreOpen()) {
+        // mostrar banner e alert
+        const closedBanner = document.getElementById('closed-banner');
+        closedBanner.classList.remove('hidden');
+        alert('A loja está fechada no momento. Não é possível adicionar produtos ao carrinho.');
+        return true; // bloqueado
+      }
+      return false; // permitido
+    }
+
+    // Funções do carrinho (mantive sua lógica)
+    let cart = [];
+    function currency(v) {
+      return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+    function renderCartCount() {
+      const count = cart.reduce((acc, item) => acc + item.qty, 0);
+      const el = document.getElementById('cart-count');
+      if (el) el.textContent = count;
+    }
+    function renderCartItems() {
+      const cartItemsEl = document.getElementById('cart-items');
+      if (!cartItemsEl) return;
+      if (cart.length === 0) {
+        cartItemsEl.innerHTML = '<p class="text-gray-500">Seu carrinho está vazio.</p>';
+        const subtotalEl = document.getElementById('cart-subtotal');
+        if (subtotalEl) subtotalEl.textContent = currency(0);
+        renderCartCount();
+        return;
+      }
+      cartItemsEl.innerHTML = '';
+      let subtotal = 0;
+      cart.forEach(({ id, qty }) => {
+        const product = PRODUCTS.find((p) => p.id === id);
+        if (!product) return;
+        const total = product.price * qty;
+        subtotal += total;
+        const itemEl = document.createElement('div');
+        itemEl.className = 'flex items-center gap-3 bg-white border rounded-xl p-3';
+        itemEl.innerHTML = `
+          <img src="${product.img}" alt="${product.name}" class="w-16 h-16 object-cover rounded-md" />
+          <div class="flex-1">
+            <div class="font-medium">${product.name}</div>
+            <div class="text-sm text-gray-600">${currency(product.price)} cada</div>
+            <div class="mt-2 flex items-center gap-2">
+              <button class="px-2 py-1 border rounded text-sm dec-qty" data-id="${id}">-</button>
+              <div class="px-3 py-1 border rounded text-sm qty-val">${qty}</div>
+              <button class="px-2 py-1 border rounded text-sm inc-qty" data-id="${id}">+</button>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-semibold">${currency(total)}</div>
+            <button class="mt-2 text-sm text-red-600 remove-item" data-id="${id}">Remover</button>
+          </div>
+        `;
+        cartItemsEl.appendChild(itemEl);
+      });
+      const subtotalEl = document.getElementById('cart-subtotal');
+      if (subtotalEl) subtotalEl.textContent = currency(subtotal);
+      renderCartCount();
+
+      // Eventos
+      document.querySelectorAll('.inc-qty').forEach((btn) =>
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
+          updateQty(id, getQty(id) + 1);
+        })
+      );
+      document.querySelectorAll('.dec-qty').forEach((btn) =>
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
+          updateQty(id, getQty(id) - 1);
+        })
+      );
+      document.querySelectorAll('.remove-item').forEach((btn) =>
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
+          removeFromCart(id);
+        })
+      );
+    }
+
+    function getQty(id) {
+      const item = cart.find((i) => i.id === id);
+      return item ? item.qty : 0;
+    }
+
+    function addToCart(id, qty = 1) {
+      if (!isStoreOpen()) {
+        alert('A loja está fechada no momento. Não é possível adicionar produtos ao carrinho.');
+        return;
+      }
+      const idx = cart.findIndex((i) => i.id === id);
+      if (idx >= 0) {
+        cart[idx].qty += qty;
+      } else {
+        cart.push({ id, qty });
+      }
+      renderCartItems();
+    }
+
+    function updateQty(id, qty) {
+      if (qty <= 0) {
+        removeFromCart(id);
+        return;
+      }
+      const idx = cart.findIndex((i) => i.id === id);
+      if (idx >= 0) {
+        cart[idx].qty = qty;
+      }
+      renderCartItems();
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter((i) => i.id !== id);
+      renderCartItems();
+    }
+
+    // Inicialização após DOM carregado
+    document.addEventListener('DOMContentLoaded', () => {
+      const cartModal = document.getElementById('cart-modal');
+      const openCartBtn = document.getElementById('open-cart-btn');
+      const ctaOpenCart = document.getElementById('cta-open-cart');
+      const closeCart = document.getElementById('close-cart');
+      const cartBackdrop = document.getElementById('cart-backdrop');
+      const checkoutBtn = document.getElementById('checkout-btn');
+
+      // Atualiza UI de status
+      updateStoreStatusUI();
+      // atualizar a cada 30s (ou 60s)
+      setInterval(updateStoreStatusUI, 60000);
+
+      // Eventos do carrinho / modais
+      if (openCartBtn) openCartBtn.addEventListener('click', () => { cartModal.classList.remove('hidden'); renderCartItems(); });
+      if (ctaOpenCart) ctaOpenCart.addEventListener('click', () => { cartModal.classList.remove('hidden'); renderCartItems(); });
+      if (closeCart) closeCart.addEventListener('click', () => { cartModal.classList.add('hidden'); });
+      if (cartBackdrop) cartBackdrop.addEventListener('click', () => { cartModal.classList.add('hidden'); });
+
+      // Botão finalizar: reforçar verificação de horário antes de abrir
+      if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', () => {
+          if (!isStoreOpen()) {
+            alert('A loja está fechada no momento. Não é possível finalizar pedidos.');
+            const closedBanner = document.getElementById('closed-banner');
+            closedBanner.classList.remove('hidden');
+            return;
+          }
+          if (cart.length === 0) { alert('Carrinho vazio.'); return; }
+          // restante do fluxo (abrir modal checkout)
+          document.getElementById('cart-modal').classList.add('hidden');
+          document.getElementById('checkout-modal').classList.add('active');
+          document.body.style.overflow = 'hidden';
+          // preencher resumo
+          const orderSummary = document.getElementById('order-summary');
+          orderSummary.innerHTML = '';
+          let total = 0;
+          cart.forEach(({ id, qty }) => {
+            const product = PRODUCTS.find((p) => p.id === id);
+            if (!product) return;
+            const itemTotal = product.price * qty;
+            total += itemTotal;
+            const div = document.createElement('div');
+            div.className = 'flex justify-between';
+            div.textContent = `${product.name} x${qty} - ${currency(itemTotal)}`;
+            orderSummary.appendChild(div);
+          });
+          document.getElementById('order-total').textContent = currency(total);
+          const last = JSON.parse(localStorage.getItem('insta_last_customer') || '{}');
+          if (last.name) document.getElementById('cust-name').value = last.name;
+          if (last.phone) document.getElementById('cust-phone').value = last.phone;
+          if (last.address) document.getElementById('cust-address').value = last.address;
+        });
+      }
+
+      // Adicionar produtos: reatribui handlers garantindo checagem de horário
+      document.querySelectorAll('.add-btn').forEach((btn) => {
+        btn.addEventListener('click', (ev) => {
+          const id = Number(btn.dataset.id);
+          if (!isStoreOpen()) {
+            // mostra banner e alerta
+            const closedBanner = document.getElementById('closed-banner');
+            closedBanner.classList.remove('hidden');
+            alert('A loja está fechada no momento. Não é possível adicionar produtos ao carrinho.');
+            return;
+          }
+          addToCart(id);
+        });
+      });
+
+      // resto dos listeners (checkout form, login, etc.)
+      document.getElementById('close-checkout')?.addEventListener('click', () => {
+        document.getElementById('checkout-modal').classList.remove('active');
+        document.body.style.overflow = '';
+      });
+      document.getElementById('back-to-cart')?.addEventListener('click', () => {
+        document.getElementById('checkout-modal').classList.remove('active');
+        document.getElementById('cart-modal').classList.remove('hidden');
+        document.body.style.overflow = '';
+      });
+
+      // Envio do formulário (mantive sua lógica)
+      document.getElementById('checkout-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!isStoreOpen()) {
+          alert('A loja está fechada no momento. Não é possível finalizar pedidos.');
+          return;
+        }
+        if (cart.length === 0) { alert('Carrinho vazio.'); return; }
+        const name = document.getElementById('cust-name').value.trim();
+        const phone = document.getElementById('cust-phone').value.trim();
+        const address = document.getElementById('cust-address').value.trim();
+        const note = document.getElementById('cust-note').value.trim();
+        if (!name || !phone || !address) { alert('Por favor, preencha nome, WhatsApp e endereço.'); return; }
+        localStorage.setItem('insta_last_customer', JSON.stringify({ name, phone, address }));
+        let message = `*Novo pedido*%0A%0A*Nome:* ${encodeURIComponent(name)}%0A*WhatsApp:* ${encodeURIComponent(phone)}%0A*Endereço:* ${encodeURIComponent(address)}%0A%0A*Itens:*%0A`;
+        let total = 0;
+        cart.forEach(({ id, qty }) => {
+          const product = PRODUCTS.find((p) => p.id === id);
+          if (!product) return;
+          const itemTotal = product.price * qty;
+          total += itemTotal;
+          message += `- ${product.name} x${qty} = ${currency(itemTotal)}%0A`;
+        });
+        message += `%0ATotal: ${currency(total)}%0A`;
+        if (note) message += `%0A*Observações:* ${encodeURIComponent(note)}%0A`;
+        message += `%0AAguardo confirmação.`;
+        const waUrl = `https://wa.me/${WA_NUMBER}?text=${message}`;
+        window.open(waUrl, '_blank');
+        cart = [];
+        renderCartItems();
+        document.getElementById('checkout-modal').classList.remove('active');
+        document.body.style.overflow = '';
+        alert('Pedido gerado. Você será redirecionado ao WhatsApp.');
+      });
+
+      // Login modal handlers
+      const loginModal = document.getElementById('login-modal');
+      const loginBtn = document.getElementById('login-btn');
+      const cancelLoginBtn = document.getElementById('cancel-login');
+      const loginForm = document.getElementById('login-form');
+      loginBtn?.addEventListener('click', () => { loginModal.classList.remove('hidden'); loginModal.classList.add('flex'); });
+      cancelLoginBtn?.addEventListener('click', () => { loginModal.classList.add('hidden'); loginModal.classList.remove('flex'); });
+      loginForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('login-name').value.trim();
+        const phone = document.getElementById('login-phone').value.trim();
+        if (!name || !phone) { alert('Por favor, preencha nome e WhatsApp.'); return; }
+        localStorage.setItem('insta_last_customer', JSON.stringify({ name, phone }));
+        alert(`Bem-vindo(a), ${name}!`);
+        loginModal.classList.add('hidden'); loginModal.classList.remove('flex');
+      });
+
+      // Render inicial do contador
+      renderCartCount();
+    });
+  </script>
+</body>
+</html>
